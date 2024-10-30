@@ -1,0 +1,41 @@
+# Python cache and build files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.whl
+*.egg-info/
+*.egg
+
+# Virtual environment
+venv/
+.venv/
+
+# FastAPI cache and log files
+*.log
+*.sqlite3
+*.sqlite
+
+# Environment and key files
+.env
+*.env
+.keys
+*.keys
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# macOS directory attributes
+.Spotlight-V100
+.Trashes
+.VolumeIcon.icns
+
+# Ubuntu system files
+*.swp
+
+# VS Code settings and workspace
+.vscode/
+.history/
