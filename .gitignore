@@ -41,9 +41,9 @@ venv/
 .history/
 
 # Pydantic models
-*.py
-*.py[cod]
-*$py.class
+# *.py
+# *.py[cod]
+# *$py.class
 
 # IDE settings
 .idea/
