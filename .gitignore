@@ -39,3 +39,11 @@ venv/
 # VS Code settings and workspace
 .vscode/
 .history/
+
+# Pydantic models
+*.py
+*.py[cod]
+*$py.class
+
+# IDE settings
+.idea/
