@@ -13,7 +13,7 @@ SERVER_IP="18.142.57.169"
 PROJECT_PATH="/home/ubuntu/trading_dashboard"
 SSH_KEY_PATH="../LightsailDefaultKey-ap-southeast-1.pem"
 LOCAL_FILES=(
-  "./.keys"
+  # "./.keys"
 #  "/path/to/your/local/file2"
 # Add more file paths as needed
 )
@@ -40,10 +40,10 @@ for i in ${!LOCAL_FILES[@]}; do
 done
 
 # Step 5: Kill the existing FastAPI service
-ssh -i $SSH_KEY_PATH ubuntu@$SERVER_IP "pkill -f 'uvicorn main:app'"
+ssh -i $SSH_KEY_PATH ubuntu@$SERVER_IP "pkill -f 'uvicorn trading_dashboard:app'"
 
 # Step 6: Start the new FastAPI service using venv Python
-ssh -i $SSH_KEY_PATH ubuntu@$SERVER_IP "cd $PROJECT_PATH && source venv/bin/activate && nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &"
+ssh -i $SSH_KEY_PATH ubuntu@$SERVER_IP "cd $PROJECT_PATH && source venv/bin/activate && nohup uvicorn trading_dashboard:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &"
 
 # Step 7: Verify the service is running
 ssh -i $SSH_KEY_PATH ubuntu@$SERVER_IP "ps aux | grep uvicorn"
