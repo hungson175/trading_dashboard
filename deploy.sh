@@ -39,5 +39,13 @@ for i in ${!LOCAL_FILES[@]}; do
   scp -i $SSH_KEY_PATH ${LOCAL_FILES[$i]} ubuntu@$SERVER_IP:${SERVER_FILES[$i]}
 done
 
-# Step 5: SSH into the server
-ssh -i $SSH_KEY_PATH ubuntu@$SERVER_IP "cd $PROJECT_PATH"
+# Step 5: Kill the existing FastAPI service
+ssh -i $SSH_KEY_PATH ubuntu@$SERVER_IP "pkill -f 'uvicorn main:app'"
+
+# Step 6: Start the new FastAPI service using venv Python
+ssh -i $SSH_KEY_PATH ubuntu@$SERVER_IP "cd $PROJECT_PATH && source venv/bin/activate && nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &"
+
+# Step 7: Verify the service is running
+ssh -i $SSH_KEY_PATH ubuntu@$SERVER_IP "ps aux | grep uvicorn"
+
+echo "Deployment completed! FastAPI service has been restarted."
