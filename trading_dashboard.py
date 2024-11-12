@@ -174,7 +174,8 @@ async def futures_get_leverage(
     try:
         return BinanceService.get_leverage(x_api_key, x_api_secret, symbols)
     except Exception as e:
-        print(f"Error in futures_get_leverage: {str(e)}")  # Add error logging
-        return {"error": str(e)}
+        error_message = str(e)
+        print(f"Error in futures_get_leverage: {error_message}")  # Add error logging
+        return {"error": error_message, "detail": "Failed to retrieve leverage information"}
 
 

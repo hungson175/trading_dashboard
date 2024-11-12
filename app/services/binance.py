@@ -24,14 +24,35 @@ class BinanceService:
     def change_leverage(api_key: str, api_secret: str, symbol: str, leverage: int):
         """
         Change leverage for a symbol in futures trading.
+        Leverage can be changed regardless of position status.
+        
+        Args:
+            api_key: Binance API key
+            api_secret: Binance API secret
+            symbol: Trading pair symbol (e.g., 'BTCUSDT')
+            leverage: Target leverage (1-125)
         """
         client = Client(api_key, api_secret)
         try:
+            # Validate leverage range
+            if not 1 <= leverage <= 125:
+                raise ValueError("Leverage must be between 1 and 125")
+                
+            # Get symbol info to verify if symbol exists
+            symbol_info = client.futures_exchange_info()
+            valid_symbols = [s['symbol'] for s in symbol_info['symbols']]
+            if symbol not in valid_symbols:
+                raise ValueError(f"Invalid symbol: {symbol}")
+                
             response = client.futures_change_leverage(
                 symbol=symbol,
                 leverage=leverage
             )
-            return response
+            return {
+                "symbol": response['symbol'],
+                "leverage": response['leverage'],
+                "maxNotionalValue": response['maxNotionalValue']
+            }
         except Exception as e:
             raise Exception(f"Failed to change leverage: {str(e)}")
 
@@ -108,7 +129,7 @@ class BinanceService:
     @staticmethod
     def get_leverage(api_key: str, api_secret: str, symbols: Optional[str] = None) -> Dict[str, Any]:
         """
-        Get current leverage settings for specified symbols
+        Get current leverage settings for specified symbols, regardless of open positions
         """
         try:
             client = Client(api_key, api_secret)
@@ -116,22 +137,19 @@ class BinanceService:
             # If symbols provided, split into list
             symbol_list = symbols.split(',') if symbols else None
             
-            if symbol_list:
-                # Get leverage for specific symbols
-                leverage_info = {}
-                for symbol in symbol_list:
-                    symbol_info = client.futures_position_information(symbol=symbol)
-                    leverage = symbol_info[0]['leverage'] if symbol_info else None
+            response = client.futures_position_information(symbol=symbols)
+            
+            if response['status'] != 200:
+                raise Exception(f"API request failed with status code: {response['status']}")
+            
+            leverage_info = {}
+            for position in response['result']:
+                symbol = position['symbol']
+                leverage = int(position['leverage'])
+                if symbol_list is None or symbol in symbol_list:
                     leverage_info[symbol] = leverage
-                return leverage_info
-            else:
-                # Get leverage for all positions
-                positions = client.futures_position_information()
-                return {
-                    position['symbol']: position['leverage'] 
-                    for position in positions 
-                    if float(position['positionAmt']) != 0  # Only return active positions
-                }
+            
+            return leverage_info
                 
         except Exception as e:
             raise Exception(f"Error getting leverage information: {str(e)}")
