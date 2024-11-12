@@ -106,9 +106,9 @@ class BinanceService:
         } 
 
     @staticmethod
-    def get_leverage_brackets(api_key: str, api_secret: str, symbols: Optional[str] = None) -> Dict[str, Any]:
+    def get_leverage(api_key: str, api_secret: str, symbols: Optional[str] = None) -> Dict[str, Any]:
         """
-        Get leverage bracket information for specified symbols
+        Get current leverage settings for specified symbols
         """
         try:
             client = Client(api_key, api_secret)
@@ -117,15 +117,21 @@ class BinanceService:
             symbol_list = symbols.split(',') if symbols else None
             
             if symbol_list:
-                # Get leverage brackets for specific symbols
-                brackets = {}
+                # Get leverage for specific symbols
+                leverage_info = {}
                 for symbol in symbol_list:
-                    symbol_info = client.futures_leverage_bracket(symbol=symbol)
-                    brackets[symbol] = symbol_info
-                return brackets
+                    symbol_info = client.futures_position_information(symbol=symbol)
+                    leverage = symbol_info[0]['leverage'] if symbol_info else None
+                    leverage_info[symbol] = leverage
+                return leverage_info
             else:
-                # Get leverage brackets for all symbols
-                return client.futures_leverage_bracket()
+                # Get leverage for all positions
+                positions = client.futures_position_information()
+                return {
+                    position['symbol']: position['leverage'] 
+                    for position in positions 
+                    if float(position['positionAmt']) != 0  # Only return active positions
+                }
                 
         except Exception as e:
-            raise Exception(f"Error getting leverage brackets: {str(e)}")
+            raise Exception(f"Error getting leverage information: {str(e)}")
