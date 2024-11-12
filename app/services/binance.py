@@ -1,6 +1,6 @@
 from binance import Client
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, Dict, Any
 
 class BinanceService:
     @staticmethod
@@ -104,3 +104,28 @@ class BinanceService:
             "period": f"Last {days} days",
             "orders": all_orders
         } 
+
+    @staticmethod
+    def get_leverage_brackets(api_key: str, api_secret: str, symbols: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Get leverage bracket information for specified symbols
+        """
+        try:
+            client = Client(api_key, api_secret)
+            
+            # If symbols provided, split into list
+            symbol_list = symbols.split(',') if symbols else None
+            
+            if symbol_list:
+                # Get leverage brackets for specific symbols
+                brackets = {}
+                for symbol in symbol_list:
+                    symbol_info = client.futures_leverage_bracket(symbol=symbol)
+                    brackets[symbol] = symbol_info
+                return brackets
+            else:
+                # Get leverage brackets for all symbols
+                return client.futures_leverage_bracket()
+                
+        except Exception as e:
+            raise Exception(f"Error getting leverage brackets: {str(e)}")

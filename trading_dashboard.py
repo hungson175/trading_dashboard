@@ -125,4 +125,32 @@ async def futures_change_leverage(
         print(f"Error in futures_change_leverage: {str(e)}")  # Add error logging
         return {"error": str(e)}
 
+@app.get("/futures_get_leverage_brackets")
+async def futures_get_leverage_brackets(
+    x_api_key: str = Header(..., description="Binance API Key"),
+    x_api_secret: str = Header(..., description="Binance API Secret"),
+    symbols: Optional[str] = None
+):
+    """
+    Get leverage bracket information for one or more symbols.
+    
+    Parameters:
+    - **x_api_key**: Your Binance API key (required)
+    - **x_api_secret**: Your Binance API secret (required) 
+    - **symbols**: Comma-separated list of trading pair symbols (e.g., 'BTCUSDT,ETHUSDT').
+                  If not provided, returns data for all symbols
+    
+    Returns:
+    - Dictionary containing leverage bracket information for each symbol including:
+        - Symbol name
+        - Notional and leverage brackets
+        - Maximum leverage available
+        - Maintenance margin requirements
+    """
+    try:
+        return BinanceService.get_leverage_brackets(x_api_key, x_api_secret, symbols)
+    except Exception as e:
+        print(f"Error in futures_get_leverage_brackets: {str(e)}")  # Add error logging
+        return {"error": str(e)}
+
 
