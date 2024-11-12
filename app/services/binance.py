@@ -19,6 +19,21 @@ class BinanceService:
     def change_position_mode(api_key: str, api_secret: str, mode: bool):
         client = BinanceService.get_client(api_key, api_secret)
         return client.futures_change_position_mode(dualSidePosition=mode)
+    
+    @staticmethod
+    def change_leverage(api_key: str, api_secret: str, symbol: str, leverage: int):
+        """
+        Change leverage for a symbol in futures trading.
+        """
+        client = Client(api_key, api_secret)
+        try:
+            response = client.futures_change_leverage(
+                symbol=symbol,
+                leverage=leverage
+            )
+            return response
+        except Exception as e:
+            raise Exception(f"Failed to change leverage: {str(e)}")
 
     @staticmethod
     def get_position_mode(api_key: str, api_secret: str):

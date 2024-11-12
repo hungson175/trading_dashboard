@@ -100,4 +100,29 @@ async def futures_get_all_orders(
         print(f"Error in futures_get_all_orders: {str(e)}")  # Add error logging
         return {"error": str(e), "detail": "Internal server error occurred"}
 
+@app.post("/futures_change_leverage")
+async def futures_change_leverage(
+    symbol: str,
+    leverage: int,
+    x_api_key: str = Header(..., description="Binance API Key"),
+    x_api_secret: str = Header(..., description="Binance API Secret")
+):
+    """
+    Change leverage for a symbol in futures trading.
+    
+    Parameters:
+    - **symbol**: Trading pair symbol (e.g., 'BTCUSDT')
+    - **leverage**: Target leverage (1-125)
+    - **x_api_key**: Your Binance API key (required)
+    - **x_api_secret**: Your Binance API secret (required)
+    
+    Returns:
+    - Response from Binance API with updated leverage information
+    """
+    try:
+        return BinanceService.change_leverage(x_api_key, x_api_secret, symbol, leverage)
+    except Exception as e:
+        print(f"Error in futures_change_leverage: {str(e)}")  # Add error logging
+        return {"error": str(e)}
+
 
