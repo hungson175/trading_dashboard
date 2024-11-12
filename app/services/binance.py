@@ -132,6 +132,7 @@ class BinanceService:
         Get current leverage settings for specified symbols, regardless of open positions
         """
         try:
+            print("Calling get_leverage()")
             client = Client(api_key, api_secret)
             
             # If symbols provided, split into list
@@ -143,6 +144,7 @@ class BinanceService:
                 raise Exception(f"API request failed with status code: {response['status']}")
             
             leverage_info = {}
+            print("Binance response:", response)
             for position in response['result']:
                 symbol = position['symbol']
                 leverage = int(position['leverage'])
